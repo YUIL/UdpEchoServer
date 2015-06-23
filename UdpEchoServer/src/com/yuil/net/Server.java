@@ -57,6 +57,7 @@ public class Server {
 					Client client = clientMap.get(str);
 					if (client == null) {
 						client = new Client();
+						client.setSocketAddress(recvPacket.getSocketAddress());
 						clientMap.put(str, client);
 					}
 					if (message.getSequenceId() != client.getLastSequenceId() + 1) {
@@ -70,7 +71,7 @@ public class Server {
 								.getSequenceId());
 						send(recvPacket.getSocketAddress(), responds);
 					} else {
-
+						System.out.println(client.getSocketAddress().toString());
 						System.out.println(message.toString());
 						client.messageArray.add(message);
 						client.lastSequenceId++;
