@@ -9,6 +9,8 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.crypto.Data;
+
 import com.yuil.util.JavaDataConverter;
 
 public class Server {
@@ -25,9 +27,11 @@ public class Server {
 	}
 
 	public class Servicer implements Runnable {
-		public volatile boolean started = false;
+		//public volatile boolean started = false;
 		int lastPackageId = 0;
 		int port = 9091;
+		long lastMessageTime=0;
+		long currentTime;
 
 		public Servicer() throws SocketException {
 			serverSocket = new DatagramSocket(port);
@@ -41,7 +45,6 @@ public class Server {
 		@Override
 		public void run() {
 			udpService();
-			started = false;
 			System.out.println("service over!");
 		}
 
@@ -71,6 +74,9 @@ public class Server {
 								.getSequenceId());
 						send(recvPacket.getSocketAddress(), responds);
 					} else {
+						currentTime=System.nanoTime();
+						System.out.println("Delay:"+(currentTime-lastMessageTime));
+						lastMessageTime=currentTime;
 						System.out.println(client.getSocketAddress().toString());
 						System.out.println(message.toString());
 						client.messageArray.add(message);
@@ -108,7 +114,7 @@ public class Server {
 		Servicer s1 = new Servicer(port);
 
 		System.out.println("startService");
-		s1.started = true;
+
 		new Thread(s1).start();
 
 	}
