@@ -32,6 +32,7 @@ public class Server {
 		int port = 9091;
 		long lastMessageTime=0;
 		long currentTime;
+		UdpMessage responds = new UdpMessage();
 
 		public Servicer() throws SocketException {
 			serverSocket = new DatagramSocket(port);
@@ -40,6 +41,7 @@ public class Server {
 		public Servicer(int port) throws SocketException {
 			this.port = port;
 			serverSocket = new DatagramSocket(port);
+			
 		}
 
 		@Override
@@ -64,15 +66,8 @@ public class Server {
 						clientMap.put(str, client);
 					}
 					if (message.getSequenceId() != client.getLastSequenceId() + 1) {
-						System.err.println("sequenceId 错误!");
+						System.err.println("sequenceId error!");
 						System.out.println(message.getSequenceId());
-						UdpMessage responds = new UdpMessage();
-						responds.sequenceId = 0;
-						responds.type = 3;
-						responds.length = 4;
-						responds.data = JavaDataConverter.intToBytes(message
-								.getSequenceId());
-						send(recvPacket.getSocketAddress(), responds);
 					} else {
 						currentTime=System.nanoTime();
 						System.out.println("Delay:"+(currentTime-lastMessageTime));
@@ -85,7 +80,11 @@ public class Server {
 					if (message.type == 0) {
 						break;
 					}
-
+					responds.sequenceId = message.getSequenceId();
+					responds.type = 2;
+					responds.length = 4;
+					responds.data = JavaDataConverter.intToBytes(client.getLastSequenceId());
+					send(recvPacket.getSocketAddress(), responds);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

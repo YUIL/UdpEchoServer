@@ -9,6 +9,22 @@ import java.util.List;
 public class Client {
 	int lastSequenceId=0;
 	SocketAddress socketAddress;
+	long lastSendTime;
+	int timeOut;
+	UdpMessage currentSendMessage;
+	UdpMessage lastSendMessage;
+	public int getTimeOut() {
+		return timeOut;
+	}
+	public void setTimeOut(int timeOut) {
+		this.timeOut = timeOut;
+	}
+	public long getLastSendTime() {
+		return lastSendTime;
+	}
+	public void setLastSendTime(long lastSendTime) {
+		this.lastSendTime = lastSendTime;
+	}
 	public List<UdpMessage> messageArray=new ArrayList<UdpMessage>();
 	public int getLastSequenceId() {
 		return lastSequenceId;
