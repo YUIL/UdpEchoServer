@@ -68,22 +68,28 @@ public class Server {
 					if (message.getSequenceId() != client.getLastSequenceId() + 1) {
 						System.err.println("sequenceId error!");
 						System.out.println(message.getSequenceId());
+						responds.sequenceId = client.lastSequenceId;
+						responds.type = 3;
+						responds.length = 4;
+						responds.data = JavaDataConverter.intToBytes(client.getLastSequenceId());
 					} else {
-						currentTime=System.nanoTime();
+						currentTime=System.currentTimeMillis();
 						System.out.println("Delay:"+(currentTime-lastMessageTime));
 						lastMessageTime=currentTime;
 						System.out.println(client.getSocketAddress().toString());
 						System.out.println(message.toString());
 						client.messageArray.add(message);
 						client.lastSequenceId++;
+						
+
+						responds.sequenceId = message.getSequenceId();
+						responds.type = 2;
+						responds.length = 4;
+						responds.data = JavaDataConverter.intToBytes(client.getLastSequenceId());
 					}
 					if (message.type == 0) {
 						break;
 					}
-					responds.sequenceId = message.getSequenceId();
-					responds.type = 2;
-					responds.length = 4;
-					responds.data = JavaDataConverter.intToBytes(client.getLastSequenceId());
 					send(recvPacket.getSocketAddress(), responds);
 				} catch (Exception e) {
 					e.printStackTrace();
