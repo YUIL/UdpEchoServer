@@ -9,7 +9,6 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.crypto.Data;
 
 import com.yuil.util.JavaDataConverter;
 
@@ -26,7 +25,7 @@ public class Server {
 		}
 	}
 
-	public class Servicer implements Runnable {
+	public class RecvServicer implements Runnable {
 		//public volatile boolean started = false;
 		int lastPackageId = 0;
 		int port = 9091;
@@ -34,11 +33,11 @@ public class Server {
 		long currentTime;
 		UdpMessage responds = new UdpMessage();
 
-		public Servicer() throws SocketException {
+		public RecvServicer() throws SocketException {
 			serverSocket = new DatagramSocket(port);
 		}
 
-		public Servicer(int port) throws SocketException {
+		public RecvServicer(int port) throws SocketException {
 			this.port = port;
 			serverSocket = new DatagramSocket(port);
 			
@@ -66,6 +65,7 @@ public class Server {
 						clientMap.put(str, client);
 					}
 					if (message.getSequenceId() != client.getLastSequenceId() + 1) {
+						System.out.println(client.getSocketAddress().toString());
 						System.err.println("sequenceId error!");
 						System.out.println(message.getSequenceId());
 						responds.sequenceId = client.lastSequenceId;
@@ -78,7 +78,7 @@ public class Server {
 						lastMessageTime=currentTime;
 						System.out.println(client.getSocketAddress().toString());
 						System.out.println(message.toString());
-						client.messageArray.add(message);
+						client.messageQueue.add(message);
 						client.lastSequenceId++;
 						
 
@@ -116,7 +116,7 @@ public class Server {
 
 	public void startService(int port) throws Exception {
 
-		Servicer s1 = new Servicer(port);
+		RecvServicer s1 = new RecvServicer(port);
 
 		System.out.println("startService");
 

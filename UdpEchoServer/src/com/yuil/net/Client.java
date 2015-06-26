@@ -1,8 +1,8 @@
 package com.yuil.net;
 
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 
@@ -10,9 +10,13 @@ public class Client {
 	int lastSequenceId=0;
 	SocketAddress socketAddress;
 	long lastSendTime;
-	int timeOut;
+	int timeOut=1000;
 	UdpMessage currentSendMessage;
 	UdpMessage lastSendMessage;
+	
+	boolean currentSendMessageLocked=false;
+
+	public Queue<UdpMessage> messageQueue=new LinkedList<UdpMessage>();
 	public int getTimeOut() {
 		return timeOut;
 	}
@@ -25,12 +29,31 @@ public class Client {
 	public void setLastSendTime(long lastSendTime) {
 		this.lastSendTime = lastSendTime;
 	}
-	public List<UdpMessage> messageArray=new ArrayList<UdpMessage>();
 	public int getLastSequenceId() {
 		return lastSequenceId;
 	}
 	public void setLastSequenceId(int lastSequenceId) {
 		this.lastSequenceId = lastSequenceId;
+	}
+	public  UdpMessage getCurrentSendMessage() {
+		//currentSendMessageLocked=true;
+		return currentSendMessage;
+	}
+	public boolean isCurrentSendMessageLocked() {
+		return currentSendMessageLocked;
+	}
+	public void setCurrentSendMessageLocked(boolean currentSendMessageLocked) {
+		this.currentSendMessageLocked = currentSendMessageLocked;
+	}
+	public  void setCurrentSendMessage(UdpMessage currentSendMessage) {
+		//if (!currentSendMessageLocked)
+			this.currentSendMessage = currentSendMessage;
+	}
+	public  UdpMessage getLastSendMessage() {
+		return lastSendMessage;
+	}
+	public  void setLastSendMessage(UdpMessage lastSendMessage) {
+		this.lastSendMessage = lastSendMessage;
 	}
 	public SocketAddress getSocketAddress() {
 		return socketAddress;
@@ -38,11 +61,11 @@ public class Client {
 	public void setSocketAddress(SocketAddress socketAddress) {
 		this.socketAddress = socketAddress;
 	}
-	public List<UdpMessage> getMessageArray() {
-		return messageArray;
+	public Queue<UdpMessage> getMessageQueue() {
+		return messageQueue;
 	}
-	public void setMessageArray(List<UdpMessage> messageArray) {
-		this.messageArray = messageArray;
+	public void setMessageQueue(Queue<UdpMessage> messageQueue) {
+		this.messageQueue = messageQueue;
 	}
 	
 	
