@@ -135,14 +135,19 @@ public class Server {
 				Client  client = (Client) iterator.next();
 				
 				for (int i = 0; i < client.messageQueue.size(); i++) {
-					UdpMessage message = client.messageQueue.poll();
-					String str=new String(message.data);
-					System.out.println(str);
-					JsonStreamParser parser=new JsonStreamParser(str);
-					JsonElement element=parser.next();
-					if(element.getAsJsonObject().get("login").getAsJsonObject().get("userName").getAsString().equals("123")){
-						System.out.println("userName right!");
+					try {
+						UdpMessage message = client.messageQueue.poll();
+						String str=new String(message.data);
+						System.out.println(str);
+						JsonStreamParser parser=new JsonStreamParser(str);
+						JsonElement element=parser.next();
+						if(element.getAsJsonObject().get("login").getAsJsonObject().get("userName").getAsString().equals("123")){
+							System.out.println("userName right!");
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
 					}
+					
 				}
 			}
 		}
