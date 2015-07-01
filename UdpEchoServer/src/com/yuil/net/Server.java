@@ -140,7 +140,7 @@ public class Server {
 					System.out.println(str);
 					JsonStreamParser parser=new JsonStreamParser(str);
 					JsonElement element=parser.next();
-					if(element.getAsJsonObject().get("login").getAsJsonObject().get("userName").toString().equals("123")){
+					if(element.getAsJsonObject().get("login").getAsJsonObject().get("userName").getAsString().equals("123")){
 						System.out.println("userName right!");
 					}
 				}
