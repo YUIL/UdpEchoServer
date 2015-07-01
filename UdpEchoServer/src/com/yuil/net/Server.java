@@ -6,16 +6,23 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonStreamParser;
 import com.yuil.util.JavaDataConverter;
 
 public class Server {
 	public Map<String, Client> clientMap = new HashMap<String, Client>();
-	private DatagramSocket serverSocket;
+	public List<Client> clientList=new ArrayList<Client>();
+	public Map<String, Client> userMap = new HashMap<String, Client>();
 
+	private DatagramSocket serverSocket;
+	
 	public static void main(String args[]) {
 		Server server = new Server();
 		try {
@@ -27,7 +34,7 @@ public class Server {
 
 	public class RecvServicer implements Runnable {
 		//public volatile boolean started = false;
-		int lastPackageId = 0;
+
 		int port = 9091;
 		long lastMessageTime=0;
 		long currentTime;
@@ -63,6 +70,7 @@ public class Server {
 						client = new Client();
 						client.setSocketAddress(recvPacket.getSocketAddress());
 						clientMap.put(str, client);
+						clientList.add(client);
 					}
 					if (message.getSequenceId() != client.getLastSequenceId() + 1) {
 						System.out.println(client.getSocketAddress().toString());
@@ -81,7 +89,6 @@ public class Server {
 						client.messageQueue.add(message);
 						client.lastSequenceId++;
 						
-
 						responds.sequenceId = message.getSequenceId();
 						responds.type = 2;
 						responds.length = 4;
@@ -122,6 +129,23 @@ public class Server {
 
 		new Thread(s1).start();
 
+
+		while(true){
+			for (Iterator iterator = clientList.iterator(); iterator.hasNext();) {
+				Client  client = (Client) iterator.next();
+				
+				for (int i = 0; i < client.messageQueue.size(); i++) {
+					UdpMessage message = client.messageQueue.poll();
+					String str=new String(message.data);
+					System.out.println(str);
+					JsonStreamParser parser=new JsonStreamParser(str);
+					JsonElement element=parser.next();
+					if(element.getAsJsonObject().get("login").getAsJsonObject().get("userName").toString().equals("123")){
+						System.out.println("userName right!");
+					}
+				}
+			}
+		}
 	}
 
 	public void SendUdpMessage(int src, Client client, UdpMessage message) {
